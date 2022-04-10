@@ -13,35 +13,42 @@ namespace PersonalBudgetControl
             List<int> elements = new List<int>();
             for (var i = 0; i < countElements; i++)
             {
-                Console.Write(elementInputText + i);
+                Console.Write(elementInputText + (i + 1) + " ");
                 elements.Add(int.Parse(Console.ReadLine()));
             }
             return elements;
         }
 
-        private static void printMonthInfo(
-            string monthName,
-            int sumIncomes,
-            int sumMandatoryExpenses,
-            int oneDayBudget,
-            int totalExpenses,
-            int accumulations
-        )
+        private static void printMonthInfo(api api)
         {
-            Console.WriteLine("---------- " + monthName + " info ----------");
-            Console.WriteLine("Ваши доходы: " + sumIncomes);
-            Console.WriteLine("Ваши обязательные расходы: " + sumMandatoryExpenses);
-            Console.WriteLine("Подсчитан бюджет на день: " + oneDayBudget);
-            Console.WriteLine("Ваши расходы за этот месяц: " + totalExpenses);
-            Console.WriteLine("Накопления за этот месяц: " + accumulations);
-            Console.WriteLine("---------- " + monthName + " info ----------");
+            Dictionary<string, int> monthInfo = api.GetMonthInfo();
+            Console.WriteLine("---------- Month info ----------");
+            Console.WriteLine("Ваши доходы: " + monthInfo["sumIncomes"]);
+            Console.WriteLine("Ваши обязательные расходы: " + monthInfo["sumMandatoryExpenses"]);
+            Console.WriteLine("Подсчитан бюджет на день: " + monthInfo["oneDayBudget"]);
+            Console.WriteLine("Ваши расходы за этот месяц: " + monthInfo["totalExpenses"]);
+            Console.WriteLine("Накопления за этот месяц: " + monthInfo["accumulations"]);
+            Console.WriteLine("---------- info ----------");
+        }
+
+        private static void helpCommand()
+        {
+            Console.WriteLine("Тебе помогут следующие комманды:");
+            Console.WriteLine("S - для создания нового месяца");
+            Console.WriteLine("I - для добавления нового дохода");
+            Console.WriteLine("M - для добавления нового обязательного расхода");
+            Console.WriteLine("E - для добавления нового расхода");
+            Console.WriteLine("H - для вывода справочной информации");
+            Console.WriteLine("G - для завершения сеанса");
+            Console.WriteLine();
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Привет!\nЭто твой личный финансовый помощник");
             bool goodBue = false;
             api api = new api();
+            helpCommand();
             while (true)
             {
                 if (goodBue)
@@ -50,7 +57,6 @@ namespace PersonalBudgetControl
                 switch (input)
                 {
                     case "S":
-                        Console.WriteLine("Creating new month");
                         List<int> incomes = getValues(
                             countInputText: "Введите количество источников вашего дохода: ",
                             elementInputText: "Введите доход №"
@@ -60,24 +66,33 @@ namespace PersonalBudgetControl
                             elementInputText: "Введите обязательный расход №"
                         );
                         api.CreateNewMonth(incomes, expenses);
-                        Dictionary<string, object> monthInfo = api.GetMonthInfo();
-                        printMonthInfo(
-                            monthName: (string) monthInfo["monthName"],
-                            sumIncomes: (int) monthInfo["sumIncomes"],
-                            sumMandatoryExpenses: (int)monthInfo["sumMandatoryExpenses"],
-                            oneDayBudget: (int)monthInfo["oneDayBudget"],
-                            totalExpenses: (int)monthInfo["totalExpenses"],
-                            accumulations: (int)monthInfo["accumulations"]
-                        );
+                        printMonthInfo(api);
                         break;
                     case "I":
-                        Console.WriteLine("Adding income");
+                        List<int> newIncomes = getValues(
+                            countInputText: "Введите количество новых источников вашего дохода: ",
+                            elementInputText: "Введите доход №"
+                        );
+                        api.AddIncome(newIncomes);
+                        printMonthInfo(api);
                         break;
                     case "M":
-                        Console.WriteLine("Adding mandatoryexpenses");
+                        List<int> newMandatoryExpenses = getValues(
+                            countInputText: "Введите количество новых обязательных расходов: ",
+                            elementInputText: "Введите обязательный расход №"
+                        );
+                        api.AddMandatoryExpenses(newMandatoryExpenses);
+                        printMonthInfo(api);
                         break;
                     case "E":
-                        Console.WriteLine("Adding expense");
+                        Console.Write("Введите новый расход за сегодня: ");
+                        int newExpense = int.Parse(Console.ReadLine());
+                        DateTime today = DateTime.Today;
+                        api.AddExpense(today, newExpense);
+                        printMonthInfo(api);
+                        break;
+                    case "H":
+                        helpCommand();
                         break;
                     case "G":
                         Console.WriteLine("Good bue!");

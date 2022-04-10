@@ -27,13 +27,13 @@ namespace PersonalBudgetControl
             this.daylyStatRepo = new DaylyStatRepo(days: countDays, oneDayBudget: oneDayBudget);
         }
 
-        public Dictionary<string, object> GetMonthInfo()
+        public Dictionary<string, int> GetMonthInfo()
         {
-            Dictionary<string, object> monthInfo = new Dictionary<string, object>()
+            Dictionary<string, int> monthInfo = new Dictionary<string, int>()
             {
-                {"monthName",  this.monthlyStatRepo.MonthStat.Month.MonthName},
+                {"monthNumber",  this.monthlyStatRepo.MonthStat.Month.MonthNumber},
                 {"sumIncomes",  this.monthlyStatRepo.MonthStat.SumIncomes},
-                {"sumMandatoryExpenses",  this.monthlyStatRepo.MonthStat.SumExpenses},
+                {"sumMandatoryExpenses",  this.monthlyStatRepo.MonthStat.SumMandatoryExpenses},
                 {"oneDayBudget",  this.monthlyStatRepo.MonthStat.OneDayBudget},
                 {"totalExpenses",  this.monthlyStatRepo.MonthStat.TotalExpenses},
                 {"accumulations",  this.monthlyStatRepo.MonthStat.Accumulations},
